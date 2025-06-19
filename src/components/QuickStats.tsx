@@ -46,18 +46,18 @@ const QuickStats: React.FC<QuickStatsProps> = ({ stats }) => {
   return (
     <section className="py-8 -mt-8 relative z-10">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {statItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div key={index} className="bg-white rounded-lg shadow-lg p-4 md:p-6 hover:shadow-xl transition-shadow">
                 <div className="flex items-center">
-                  <div className={`${item.bgColor} p-3 rounded-lg mr-4`}>
-                    <IconComponent className={`w-6 h-6 ${item.color}`} />
+                  <div className={`${item.bgColor} p-2 md:p-3 rounded-lg mr-3 md:mr-4 flex-shrink-0`}>
+                    <IconComponent className={`w-5 h-5 md:w-6 md:h-6 ${item.color}`} />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{item.label}</p>
-                    <p className="text-2xl font-bold text-gray-800">{item.value}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs md:text-sm text-gray-600 truncate">{item.label}</p>
+                    <p className="text-lg md:text-2xl font-bold text-gray-800">{item.value}</p>
                   </div>
                 </div>
               </div>

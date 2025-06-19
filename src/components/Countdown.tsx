@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 interface CountdownProps {
   targetDate: string;
@@ -34,28 +34,28 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
   }, [targetDate]);
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto">
+    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 max-w-2xl mx-auto">
       <div className="flex items-center justify-center mb-4">
-        <Calendar className="w-6 h-6 mr-2" />
-        <h3 className="text-xl font-semibold">Competition Ends In</h3>
+        <Calendar className="w-5 h-5 md:w-6 md:h-6 mr-2" />
+        <h3 className="text-lg md:text-xl font-semibold text-center">Competition Ends In</h3>
       </div>
       
-      <div className="grid grid-cols-4 gap-4 text-center">
-        <div className="bg-white/20 rounded-lg p-3">
-          <div className="text-2xl font-bold">{timeLeft.days}</div>
-          <div className="text-sm opacity-80">Days</div>
+      <div className="grid grid-cols-4 gap-2 md:gap-4 text-center">
+        <div className="bg-white/20 rounded-lg p-2 md:p-3">
+          <div className="text-xl md:text-2xl font-bold">{timeLeft.days}</div>
+          <div className="text-xs md:text-sm opacity-80">Days</div>
         </div>
-        <div className="bg-white/20 rounded-lg p-3">
-          <div className="text-2xl font-bold">{timeLeft.hours}</div>
-          <div className="text-sm opacity-80">Hours</div>
+        <div className="bg-white/20 rounded-lg p-2 md:p-3">
+          <div className="text-xl md:text-2xl font-bold">{timeLeft.hours}</div>
+          <div className="text-xs md:text-sm opacity-80">Hours</div>
         </div>
-        <div className="bg-white/20 rounded-lg p-3">
-          <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-          <div className="text-sm opacity-80">Minutes</div>
+        <div className="bg-white/20 rounded-lg p-2 md:p-3">
+          <div className="text-xl md:text-2xl font-bold">{timeLeft.minutes}</div>
+          <div className="text-xs md:text-sm opacity-80">Minutes</div>
         </div>
-        <div className="bg-white/20 rounded-lg p-3">
-          <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-          <div className="text-sm opacity-80">Seconds</div>
+        <div className="bg-white/20 rounded-lg p-2 md:p-3">
+          <div className="text-xl md:text-2xl font-bold">{timeLeft.seconds}</div>
+          <div className="text-xs md:text-sm opacity-80">Seconds</div>
         </div>
       </div>
     </div>
