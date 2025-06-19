@@ -1,0 +1,48 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: bni-games-glory-tracker
+  AZURE_WEBAPP_PACKAGE_PATH: './dist'
+  NODE_VERSION: '20.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_AUTH_DOMAIN: ${{ secrets.VITE_AUTH_DOMAIN }}
+          VITE_ENVIRONMENT: production
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: ./dist
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
