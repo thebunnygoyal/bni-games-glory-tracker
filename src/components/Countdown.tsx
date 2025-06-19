@@ -6,15 +6,8 @@ interface CountdownProps {
   targetDate: string;
 }
 
-interface TimeLeft {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
 const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+  const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
@@ -22,69 +15,47 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
   });
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = +new Date(targetDate) - +new Date();
-      
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const target = new Date(targetDate).getTime();
+      const difference = target - now;
+
       if (difference > 0) {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
         });
       }
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    }, 1000);
 
     return () => clearInterval(timer);
   }, [targetDate]);
 
   return (
-    <div className="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-8 max-w-4xl mx-auto">
-      <div className="text-center mb-6">
-        <div className="flex items-center justify-center mb-2">
-          <Calendar className="w-6 h-6 text-bni-amber mr-2" />
-          <h2 className="text-2xl font-bold">Games End In</h2>
-        </div>
-        <p className="text-lg opacity-90">August 1, 2025</p>
+    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto">
+      <div className="flex items-center justify-center mb-4">
+        <Calendar className="w-6 h-6 mr-2" />
+        <h3 className="text-xl font-semibold">Competition Ends In</h3>
       </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white bg-opacity-20 rounded-xl p-4 text-center hover:bg-opacity-30 transition-all duration-300">
-          <div className="text-4xl font-bold text-bni-amber mb-2 font-inter">
-            {String(timeLeft.days).padStart(2, '0')}
-          </div>
-          <div className="text-sm opacity-80 font-medium">DAYS</div>
+      
+      <div className="grid grid-cols-4 gap-4 text-center">
+        <div className="bg-white/20 rounded-lg p-3">
+          <div className="text-2xl font-bold">{timeLeft.days}</div>
+          <div className="text-sm opacity-80">Days</div>
         </div>
-        
-        <div className="bg-white bg-opacity-20 rounded-xl p-4 text-center hover:bg-opacity-30 transition-all duration-300">
-          <div className="text-4xl font-bold text-bni-amber mb-2 font-inter">
-            {String(timeLeft.hours).padStart(2, '0')}
-          </div>
-          <div className="text-sm opacity-80 font-medium">HOURS</div>
+        <div className="bg-white/20 rounded-lg p-3">
+          <div className="text-2xl font-bold">{timeLeft.hours}</div>
+          <div className="text-sm opacity-80">Hours</div>
         </div>
-        
-        <div className="bg-white bg-opacity-20 rounded-xl p-4 text-center hover:bg-opacity-30 transition-all duration-300">
-          <div className="text-4xl font-bold text-bni-amber mb-2 font-inter">
-            {String(timeLeft.minutes).padStart(2, '0')}
-          </div>
-          <div className="text-sm opacity-80 font-medium">MINUTES</div>
+        <div className="bg-white/20 rounded-lg p-3">
+          <div className="text-2xl font-bold">{timeLeft.minutes}</div>
+          <div className="text-sm opacity-80">Minutes</div>
         </div>
-        
-        <div className="bg-white bg-opacity-20 rounded-xl p-4 text-center hover:bg-opacity-30 transition-all duration-300">
-          <div className="text-4xl font-bold text-bni-amber mb-2 font-inter animate-pulse">
-            {String(timeLeft.seconds).padStart(2, '0')}
-          </div>
-          <div className="text-sm opacity-80 font-medium">SECONDS</div>
-        </div>
-      </div>
-
-      <div className="text-center mt-6">
-        <div className="flex items-center justify-center text-sm opacity-80">
-          <Clock className="w-4 h-4 mr-1" />
-          Live countdown updates every second
+        <div className="bg-white/20 rounded-lg p-3">
+          <div className="text-2xl font-bold">{timeLeft.seconds}</div>
+          <div className="text-sm opacity-80">Seconds</div>
         </div>
       </div>
     </div>

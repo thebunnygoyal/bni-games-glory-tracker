@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navigation from '../components/Navigation';
-import { Trophy, TrendingUp, Users, Target } from 'lucide-react';
+import { Trophy, Target, Users, Calendar } from 'lucide-react';
 
 const Scoring = () => {
   return (
@@ -9,83 +9,108 @@ const Scoring = () => {
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4 font-inter">Scoring Dashboard</h1>
-          <p className="text-lg text-gray-600">Real-time scoring and analytics for all chapters</p>
-        </div>
-
-        {/* Scoring Overview Cards */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Scoring Dashboard</h1>
+        
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Scoring Rules */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <Trophy className="w-8 h-8 text-yellow-500" />
-              <span className="text-2xl font-bold text-gray-800">8,650</span>
+            <h2 className="text-xl font-bold text-red-600 mb-4 flex items-center">
+              <Target className="w-5 h-5 mr-2" />
+              Scoring System
+            </h2>
+            
+            <div className="space-y-4">
+              <div className="border-l-4 border-blue-500 pl-4">
+                <h3 className="font-semibold">Referrals</h3>
+                <p className="text-gray-600">1 coin per referral</p>
+              </div>
+              
+              <div className="border-l-4 border-green-500 pl-4">
+                <h3 className="font-semibold">Visitors</h3>
+                <p className="text-gray-600">50 coins per visitor</p>
+              </div>
+              
+              <div className="border-l-4 border-amber-500 pl-4">
+                <h3 className="font-semibold">Attendance</h3>
+                <p className="text-gray-600">-10 coins per absence</p>
+              </div>
+              
+              <div className="border-l-4 border-purple-500 pl-4">
+                <h3 className="font-semibold">Testimonials</h3>
+                <p className="text-gray-600">5 coins each (max 2)</p>
+              </div>
+              
+              <div className="border-l-4 border-red-500 pl-4">
+                <h3 className="font-semibold">Trainings</h3>
+                <p className="text-gray-600">25 coins each (max 3)</p>
+              </div>
             </div>
-            <h3 className="font-semibold text-gray-600">Highest Score</h3>
-            <p className="text-sm text-gray-500">INCREDIBLEZ</p>
           </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <TrendingUp className="w-8 h-8 text-green-500" />
-              <span className="text-2xl font-bold text-gray-800">+150</span>
-            </div>
-            <h3 className="font-semibold text-gray-600">Weekly Change</h3>
-            <p className="text-sm text-gray-500">Average increase</p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <Users className="w-8 h-8 text-blue-500" />
-              <span className="text-2xl font-bold text-gray-800">189</span>
-            </div>
-            <h3 className="font-semibold text-gray-600">Active Members</h3>
-            <p className="text-sm text-gray-500">Across all chapters</p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <Target className="w-8 h-8 text-purple-500" />
-              <span className="text-2xl font-bold text-gray-800">97.3%</span>
-            </div>
-            <h3 className="font-semibold text-gray-600">Attendance</h3>
-            <p className="text-sm text-gray-500">Overall rate</p>
-          </div>
-        </div>
-
-        {/* Detailed Scoring Section */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Detailed Scoring Breakdown</h2>
           
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Chapter</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600">Referrals</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600">Visitors</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600">Attendance</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600">Total Coins</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="px-6 py-4 font-semibold">INCREDIBLEZ</td>
-                  <td className="px-6 py-4 text-right">2,850</td>
-                  <td className="px-6 py-4 text-right">4,800</td>
-                  <td className="px-6 py-4 text-right">1,000</td>
-                  <td className="px-6 py-4 text-right font-bold text-bni-red">8,650</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="px-6 py-4 font-semibold">KNIGHTZ</td>
-                  <td className="px-6 py-4 text-right">2,600</td>
-                  <td className="px-6 py-4 text-right">4,600</td>
-                  <td className="px-6 py-4 text-right">1,000</td>
-                  <td className="px-6 py-4 text-right font-bold text-bni-red">8,200</td>
-                </tr>
-                {/* More rows would go here */}
-              </tbody>
-            </table>
+          {/* Current Week */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold text-red-600 mb-4 flex items-center">
+              <Calendar className="w-5 h-5 mr-2" />
+              Week 3 Progress
+            </h2>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span>Total Referrals</span>
+                <span className="font-bold text-blue-600">89</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span>Total Visitors</span>
+                <span className="font-bold text-green-600">23</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span>Attendance Rate</span>
+                <span className="font-bold text-amber-600">96.2%</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span>Total Testimonials</span>
+                <span className="font-bold text-purple-600">47</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span>Training Completions</span>
+                <span className="font-bold text-red-600">31</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Top Performers */}
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-bold text-red-600 mb-4 flex items-center">
+            <Trophy className="w-5 h-5 mr-2" />
+            Top Performers This Week
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl mb-2">🥇</div>
+              <h3 className="font-bold">John Doe</h3>
+              <p className="text-gray-600">INCREDIBLEZ</p>
+              <p className="text-xl font-bold text-yellow-600">125 coins</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-3xl mb-2">🥈</div>
+              <h3 className="font-bold">Jane Smith</h3>
+              <p className="text-gray-600">KNIGHTZ</p>
+              <p className="text-xl font-bold text-gray-500">110 coins</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-3xl mb-2">🥉</div>
+              <h3 className="font-bold">Mike Johnson</h3>
+              <p className="text-gray-600">ETERNAL</p>
+              <p className="text-xl font-bold text-amber-600">95 coins</p>
+            </div>
           </div>
         </div>
       </div>
