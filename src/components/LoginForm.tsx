@@ -1,151 +1,166 @@
-
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../lib/auth/auth.context';
+import { loginRateLimit, rateLimiter } from '../lib/security/rateLimiter';
+import { Sanitizer } from '../lib/security/sanitizer';
 import { z } from 'zod';
-import { setCurrentUser } from '../lib/auth';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
-import { toast } from './ui/use-toast';
-import { LogIn, Shield } from 'lucide-react';
+import { emailSchema } from '../lib/security/validation';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required')
+  email: emailSchema,
+  password: z.string().min(1, 'Password is required'),
 });
 
-type LoginInput = z.infer<typeof loginSchema>;
+export function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attemptsRemaining, setAttemptsRemaining] = useState(5);
+  
+  const { login, error: authError } = useAuth();
+  const navigate = useNavigate();
 
-interface LoginFormProps {
-  onLoginSuccess?: () => void;
-}
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+  }, []);
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
 
-  const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: ''
+    if (!rateLimiter.isAllowed(loginRateLimit)) {
+      setErrors({ form: 'Too many login attempts. Please try again later.' });
+      return;
     }
-  });
-
-  const onSubmit = async (data: LoginInput) => {
-    setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const sanitizedData = {
+        email: Sanitizer.sanitizeText(email, { maxLength: 255 }),
+        password: password,
+      };
 
-      // Mock login - replace with actual authentication
-      if (data.email === 'admin@bni.com' && data.password === 'admin123') {
-        setCurrentUser({
-          id: '1',
-          email: data.email,
-          role: 'admin',
-          name: 'Admin User'
-        });
-      } else if (data.email === 'captain@bni.com' && data.password === 'captain123') {
-        setCurrentUser({
-          id: '2',
-          email: data.email,
-          role: 'captain',
-          chapter: 'INCREDIBLEZ',
-          name: 'Captain User'
-        });
-      } else {
-        throw new Error('Invalid credentials');
-      }
+      loginSchema.parse(sanitizedData);
+      
+      setIsSubmitting(true);
 
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
+      await login({
+        email: sanitizedData.email,
+        password: sanitizedData.password,
       });
 
-      onLoginSuccess?.();
+      setPassword('');
+      navigate('/dashboard');
     } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach(err => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as string] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      } else {
+        setAttemptsRemaining(prev => Math.max(0, prev - 1));
+        setErrors({ 
+          form: authError || 'Invalid credentials. Please try again.' 
+        });
+      }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-      <div className="text-center mb-6">
-        <Shield className="w-12 h-12 text-red-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-800">Login</h2>
-        <p className="text-gray-600">Access your BNI Games dashboard</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to BNI Games
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Independence Games 2.0 - Glory Tracker
+          </p>
+        </div>
+        
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+                  errors.email ? 'border-red-300' : 'border-gray-300'
+                } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
+            
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
+                  errors.password ? 'border-red-300' : 'border-gray-300'
+                } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isSubmitting}
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
+            </div>
+          </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {errors.form && (
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="text-sm text-red-800">
+                {errors.form}
+                {attemptsRemaining < 5 && attemptsRemaining > 0 && (
+                  <p className="mt-1">
+                    {attemptsRemaining} attempt{attemptsRemaining !== 1 ? 's' : ''} remaining
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter your password" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button 
-            type="submit" 
-            disabled={isLoading}
-            className="w-full bg-red-600 hover:bg-red-700"
-          >
-            {isLoading ? (
-              "Signing in..."
-            ) : (
-              <>
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In
-              </>
-            )}
-          </Button>
+          <div>
+            <button
+              type="submit"
+              disabled={isSubmitting || attemptsRemaining === 0}
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                isSubmitting || attemptsRemaining === 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+              }`}
+            >
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
+            </button>
+          </div>
         </form>
-      </Form>
-
-      <div className="mt-4 text-sm text-gray-600 text-center">
-        <p>Demo accounts:</p>
-        <p>Admin: admin@bni.com / admin123</p>
-        <p>Captain: captain@bni.com / captain123</p>
       </div>
     </div>
   );
-};
-
-export default LoginForm;
+}
