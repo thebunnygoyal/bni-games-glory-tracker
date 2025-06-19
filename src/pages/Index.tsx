@@ -5,9 +5,12 @@ import Navigation from '../components/Navigation';
 import Countdown from '../components/Countdown';
 import Leaderboard from '../components/Leaderboard';
 import QuickStats from '../components/QuickStats';
+import WeeklyDataForm from '../components/WeeklyDataForm';
+import { isAuthenticated, canSubmitData } from '../lib/auth';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<'chapters' | 'individuals'>('chapters');
+  const [showDataForm, setShowDataForm] = useState(false);
 
   // Mock data for development
   const quickStats = {
@@ -15,6 +18,14 @@ const Index = () => {
     totalVisitors: 156,
     attendanceRate: 97.3,
     activeMembers: 189
+  };
+
+  const handleSubmitData = () => {
+    if (!isAuthenticated()) {
+      // Redirect to login or show login modal
+      return;
+    }
+    setShowDataForm(true);
   };
 
   return (
@@ -39,7 +50,10 @@ const Index = () => {
           
           {/* Action Buttons */}
           <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <button className="bg-white text-bni-red hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl flex items-center gap-2">
+            <button 
+              onClick={handleSubmitData}
+              className="bg-white text-bni-red hover:bg-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+            >
               <Plus className="w-5 h-5" />
               Submit Weekly Data
             </button>
@@ -57,6 +71,23 @@ const Index = () => {
 
       {/* Quick Stats */}
       <QuickStats stats={quickStats} />
+
+      {/* Weekly Data Form */}
+      {showDataForm && canSubmitData() && (
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            <WeeklyDataForm />
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setShowDataForm(false)}
+                className="text-gray-600 hover:text-gray-800 underline"
+              >
+                Close Form
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Leaderboard Section */}
       <section className="py-12">
